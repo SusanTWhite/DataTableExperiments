@@ -10,7 +10,7 @@
       </span>
     </div>
   </div>
-  <div class="card">
+  <div class="card"> <!--v-if="section == 'customers'"-->
     <DataTable
       v-model:filters="filters"
       :value="customers"
@@ -54,35 +54,39 @@
       </Column>
     </DataTable>
   </div>
-  <div class="card">
+  <div class="card" v-if="section == 'companies'">
     <DataTable
       v-model:filters="filters"
-      :value="customers"
+      :value="companies"
       paginator
-      :rows="1"
+      :rows="5"
       dataKey="id"
       filterDisplay="row"
       :loading="loading"
-      :globalFilterFields="['name', 'country.name']"
+      :globalFilterFields="['company', 'country.name']"
     >
-      <template #empty> No customers found. </template>
-      <template #loading> Loading customers data. Please wait. </template>
-      <Column field="name" header="Name" style="min-width: 12rem">
+      <template #empty> No companies found. </template>
+      <template #loading> Loading companies data. Please wait. </template>
+      <Column field="company" header="Company" style="min-width: 12rem">
         <template #body="{ data }">
-          {{ data.name }}
+          {{ data.company }}
         </template>
       </Column>
       <Column
         header="Country"
+        field="country.name"
         filterField="country.name"
         style="min-width: 12rem"
       >
-        <template #body="{ data }">
+        <!--template #body="{ data }">
           <div class="flex align-items-center gap-2">
             <span>{{ data.country.name }}</span>
           </div>
-        </template>
-      </Column>
+        </template-->
+          <div class="flex align-items-center gap-2">
+            <span>{{ country.name }}</span>
+          </div>
+        </Column>
     </DataTable>
   </div>
 </template>
@@ -93,6 +97,8 @@ import { FilterMatchMode } from 'primevue/api';
 import { CustomerService } from '@/service/CustomerService';
 
 const customers = ref();
+const companies = ref();
+const section = ref();
 const filters = ref({
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
 });
@@ -117,19 +123,31 @@ const statuses = ref([
   'proposal',
 ]);
 const loading = ref(true);
-// v-if="data.status=='qualified'"
+
 onMounted(() => {
   CustomerService.getCustomersMedium().then((data) => {
     customers.value = getCustomers(data);
-    loading.value = false;
+    //section.value = 'customers';
   });
+  CustomerService.getCompaniesMedium().then((data) => {
+    companies.value = getCompanies(data);
+    section.value = 'companies';
+  });
+  loading.value = false;
 });
 
 const getCustomers = (data) => {
-  return [...(data || [])].map((d) => {
-    d.date = new Date(d.date);
-    //console.log('Console log: ' + d.status);
-    return d;
+  return [...(data || [])].map((d1) => {
+    d1.date = new Date(d1.date);
+    //console.log('Console log: ' + d1.status);
+    return d1;
+  });
+};
+const getCompanies = (data) => {
+  return [...(data || [])].map((d2) => {
+    d2.date = new Date(d2.date);
+    //console.log('Console log: ' + d2.company);
+    return d2;
   });
 };
 const formatDate = (value) => {

@@ -9028,6 +9028,20 @@ export const CustomerService = {
                 : '';
 
             return fetch('https://www.primefaces.org/data/customers?' + queryParams).then((res) => res.json());
-        }
+        },
+
+        getCompaniesMedium() {
+            return Promise.resolve(this.getData().slice(0, 50));
+        },
+        
+        getCompanies(params) {
+            const queryParams = params
+                ? Object.keys(params)
+                      .map((k) => encodeURIComponent(k) + '=' + encodeURIComponent(params[k]))
+                      .join('&')
+                : '';
+
+            return fetch('https://www.primefaces.org/data/companies?' + queryParams).then((res) => res.json());
+        }        
     };
     
